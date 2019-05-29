@@ -67,7 +67,7 @@ void MLX90614_WriteReg(uint8_t devAddr, uint8_t regAddr, uint16_t data) {
 	i2cdata[0] = temp[1]; //EEPROM-address
 	i2cdata[1] = temp[2]; //Delete-Byte, low
 	i2cdata[2] = temp[3]; //Delete-Byte, high
-	i2cdata[3] = CRC8_Calc(temp, 4); //= 0xE8 PEC -> CRC8-checksum for 240000, calculation: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html
+	i2cdata[3] = CRC8_Calc(temp, 4); //CRC8-checksum calculation: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html
 
 	HAL_I2C_Master_Transmit(&hi2c3, (devAddr << 1), i2cdata, 4, 0xFFFF);
 	HAL_Delay(10);
@@ -80,13 +80,13 @@ void MLX90614_WriteReg(uint8_t devAddr, uint8_t regAddr, uint16_t data) {
 	i2cdata[0] = temp[1]; //EEPROM-address
 	i2cdata[1] = temp[2]; //Delete-Byte, low
 	i2cdata[2] = temp[3]; //Delete-Byte, high
-	i2cdata[3] = CRC8_Calc(temp, 4); //= 0xE8 PEC -> CRC8-checksum for 240000, calculation: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html
+	i2cdata[3] = CRC8_Calc(temp, 4); //CRC8-checksum calculation: http://www.sunshine2k.de/coding/javascript/crc/crc_js.html
 
 	HAL_I2C_Master_Transmit(&hi2c3, (devAddr << 1), i2cdata, 4, 0xFFFF);
 	HAL_Delay(10);
-	MLX90614_SendDebugMsg(MLX90614_DBG_MSG_W, devAddr, i2cdata[0], (i2cdata[1] <<8 | i2cdata[2]), i2cdata[3], 0x00);
+	MLX90614_SendDebugMsg(MLX90614_DBG_MSG_W, devAddr, i2cdata[0], data, i2cdata[3], 0x00);
 }
-uint16_t MLX90614_ReadReg(uint8_t devAddr, uint8_t regAddr) {
+uint16_t MLX90614_ReadReg(uint8_t devAddr, uint8_t regAddr, uint8_t dbg_lvl) {
 	uint16_t data;
 	uint8_t in_buff[3], crc_buff[5], crc;
 
@@ -104,9 +104,9 @@ uint16_t MLX90614_ReadReg(uint8_t devAddr, uint8_t regAddr) {
 
 	//TODO: implement CRC8 check on data received
 	if (crc != in_buff[2]) {
-		MLX90614_SendDebugMsg(MLX90614_DBG_MSG_R, devAddr, regAddr, data, in_buff[2], crc);
 		data = 0x0000;
 	}
+	if(dbg_lvl == MLX90614_DBG_ON)	MLX90614_SendDebugMsg(MLX90614_DBG_MSG_R, devAddr, regAddr, data, in_buff[2], crc);
 
 	//HAL_Delay(1);
 	return data;
@@ -115,7 +115,7 @@ float MLX90614_ReadTemp(uint8_t devAddr, uint8_t regAddr) {
 	float temp;
 	uint16_t data;
 
-	data = MLX90614_ReadReg(devAddr, regAddr);
+	data = MLX90614_ReadReg(devAddr, regAddr, MLX90614_DBG_OFF);
 	temp = data*0.02 - 273.15;
 
 	return temp;
