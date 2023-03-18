@@ -30,8 +30,8 @@
 #define MLX90614_TOBJ1 		(MLX90614_OP_RAM | 0x07) /* object 1 temperature */
 #define MLX90614_TOBJ2 		(MLX90614_OP_RAM | 0x08) /* object 2 temperature */
 /* EEPROM offsets with 16-bit data, MSB first */
-#define MLX90614_TOMIN 		(MLX90614_OP_EEPROM | 0x00) /* object temperature min register */
-#define MLX90614_TOMAX 		(MLX90614_OP_EEPROM | 0x01) /* object temperature max register */
+#define MLX90614_TOMAX 		(MLX90614_OP_EEPROM | 0x00) /* object temperature min register */
+#define MLX90614_TOMIN 		(MLX90614_OP_EEPROM | 0x01) /* object temperature max register */
 #define MLX90614_PWMCTRL 	(MLX90614_OP_EEPROM | 0x02) /* pwm configuration register */
 #define MLX90614_TARANGE 	(MLX90614_OP_EEPROM | 0x03) /* ambient temperature register */
 #define MLX90614_EMISSIVITY (MLX90614_OP_EEPROM | 0x04) /* emissivity correction register */
